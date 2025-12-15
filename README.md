@@ -55,3 +55,14 @@ drop_table users
 ## Демонстрация CRUD-операций
 
 [![asciinema](https://asciinema.org/a/v7G3dbVZkiOfP3P2TaImNjxSX.svg)](https://asciinema.org/a/v7G3dbVZkiOfP3P2TaImNjxSX)
+
+## Дополнительные возможности
+
+- Централизованная обработка ошибок с помощью декораторов
+- Подтверждение опасных операций (удаление таблиц и записей)
+- Логирование времени выполнения операций
+- Кэширование результатов SELECT-запросов
+
+## Демонстрация работы базы данных
+
+[![asciinema](https://asciinema.org/a/eUQELiBoOYwJIxuSpDGldVGE1.svg)](https://asciinema.org/a/eUQELiBoOYwJIxuSpDGldVGE1)

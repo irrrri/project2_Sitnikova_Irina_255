@@ -1,4 +1,14 @@
+from src.primitive_db.decorators import (
+    confirm_action,
+    create_cacher,
+    handle_db_errors,
+    log_time,
+)
+
 SUPPORTED_TYPES = {"int", "str", "bool"}
+
+
+_select_cache = create_cacher()
 
 
 def _get_schema(metadata, table_name):
@@ -66,6 +76,7 @@ def _typed_where(metadata, table_name, where_clause):
     return col, typed_val
 
 
+@handle_db_errors
 def create_table(metadata, table_name, columns):
     if table_name in metadata:
         print(f'Ошибка: Таблица "{table_name}" уже существует.')
@@ -93,6 +104,8 @@ def create_table(metadata, table_name, columns):
     return metadata
 
 
+@handle_db_errors
+@confirm_action("удаление таблицы")
 def drop_table(metadata, table_name):
     if table_name not in metadata:
         print(f'Ошибка: Таблица "{table_name}" не существует.')
@@ -103,6 +116,8 @@ def drop_table(metadata, table_name):
     return metadata
 
 
+@handle_db_errors
+@log_time
 def insert(metadata, table_name, table_data, values):
     schema = _get_schema(metadata, table_name)
     if schema is None:
@@ -131,17 +146,25 @@ def insert(metadata, table_name, table_data, values):
     return table_data, new_id
 
 
+@handle_db_errors
+@log_time
 def select(metadata, table_name, table_data, where_clause=None):
-    if not where_clause:
-        return table_data
+    cache_key = (table_name, frozenset(where_clause.items()) if where_clause else None)
 
-    where_col, where_val = _typed_where(metadata, table_name, where_clause)
-    if where_col is None:
-        return []
+    def compute():
+        if not where_clause:
+            return table_data
 
-    return [row for row in table_data if row.get(where_col) == where_val]
+        where_col, where_val = _typed_where(metadata, table_name, where_clause)
+        if where_col is None:
+            return []
+
+        return [row for row in table_data if row.get(where_col) == where_val]
+
+    return _select_cache(cache_key, compute)
 
 
+@handle_db_errors
 def update(metadata, table_name, table_data, set_clause, where_clause):
     schema = _get_schema(metadata, table_name)
     if schema is None:
@@ -172,6 +195,8 @@ def update(metadata, table_name, table_data, set_clause, where_clause):
     return table_data, matched_ids
 
 
+@handle_db_errors
+@confirm_action("удаление записи")
 def delete(metadata, table_name, table_data, where_clause):
     where_col, where_val = _typed_where(metadata, table_name, where_clause)
     if where_col is None:
