@@ -42,3 +42,16 @@ drop_table users
 создания таблицы, просмотра списка таблиц и удаления таблицы.
 
 [![asciinema](https://asciinema.org/a/V6NrjudzY5NVuz4zhjESEY5ka.svg)](https://asciinema.org/a/V6NrjudzY5NVuz4zhjESEY5ka)
+
+## CRUD-операции
+
+- `insert into <table> values (<v1>, <v2>, ...)`
+- `select from <table>`
+- `select from <table> where <col> = <value>`
+- `update <table> set <col> = <value> where <col> = <value>`
+- `delete from <table> where <col> = <value>`
+- `info <table>`
+
+## Демонстрация CRUD-операций
+
+[![asciinema](https://asciinema.org/a/v7G3dbVZkiOfP3P2TaImNjxSX.svg)](https://asciinema.org/a/v7G3dbVZkiOfP3P2TaImNjxSX)
